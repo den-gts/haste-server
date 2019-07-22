@@ -1,5 +1,3 @@
-FROM alpine
-RUN apk update && apk add git
 FROM node:alpine
 WORKDIR /src
 COPY . .
