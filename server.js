@@ -9,6 +9,7 @@ var connect_st = require('st');
 var connect_rate_limit = require('connect-ratelimit');
 
 var DocumentHandler = require('./lib/document_handler');
+var AppHandler = require('./lib/app_handler');
 
 // Load the configuration and set some defaults
 var config = JSON.parse(fs.readFileSync('./config.js', 'utf8'));
@@ -98,6 +99,8 @@ var documentHandler = new DocumentHandler({
   keyGenerator: keyGenerator
 });
 
+var appHandler = new AppHandler(preferredStore);
+
 var app = connect();
 
 // Rate limit all requests
@@ -124,6 +127,9 @@ app.use(route(function(router) {
     var skipExpire = !!config.documents[key];
     return documentHandler.handleGet(key, response, skipExpire);
   });
+  router.get('/health', function(request, response) {
+  	return appHandler.health(response);
+  })
 }));
 
 // Otherwise, try to match static files
